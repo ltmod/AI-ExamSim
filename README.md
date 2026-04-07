@@ -33,7 +33,7 @@ A self-hosted, browser-based multiple-choice quiz application that supports any 
 
    ```bash
    git clone <repository-url>
-   cd AAIA
+   cd AI-ExamSim
    ```
 
 2. **Install dependencies**
@@ -115,7 +115,7 @@ You can also load a bank file at runtime using the **Load** button on the setup 
 ## Project Structure
 
 ```
-AAIA/
+AI-ExamSim/
   server.js          Express server (static files + API endpoints)
   app.js             Client-side quiz logic
   index.html         Single-page UI
