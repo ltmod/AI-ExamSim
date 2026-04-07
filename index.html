@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Practice Quiz</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <h1 id="appTitle">Practice Quiz</h1>
+      <div class="header-controls">
+        <div class="score-display">
+          <span id="scoreText">0/0 correct</span>
+          <span id="scorePercent" class="score-percent"></span>
+        </div>
+        <div id="bankWideScore" class="bank-wide-score" hidden>
+          <span class="bank-wide-label">Bank</span>
+          <span id="bankWideScoreText"></span>
+          <span id="bankWideScorePercent" class="score-percent"></span>
+        </div>
+        <button id="missedBtn" class="btn btn-missed" title="Review missed questions">
+          <span id="missedCount">0</span> missed
+        </button>
+      </div>
+    </header>
+
+    <div id="setupScreen" class="screen setup-screen">
+      <div class="setup-card">
+        <h2>Configure Your Quiz</h2>
+
+        <div class="setup-group">
+          <label for="bankSelect">Question Bank</label>
+          <div class="bank-selector-row">
+            <select id="bankSelect"></select>
+            <button id="loadBankBtn" class="btn btn-outline btn-sm" title="Load a questions.js file">Load</button>
+            <button id="removeBankBtn" class="btn btn-outline btn-sm btn-danger" title="Remove this question bank" disabled>Remove</button>
+          </div>
+          <input type="file" id="bankFile" accept=".js" hidden>
+        </div>
+
+        <div class="setup-group">
+          <label for="domainSelect">Domain</label>
+          <select id="domainSelect">
+            <option value="all">All Domains</option>
+          </select>
+        </div>
+
+        <div class="setup-group">
+          <label for="modeSelect">Question Order</label>
+          <select id="modeSelect">
+            <option value="sequential">Sequential</option>
+            <option value="random">Random</option>
+          </select>
+        </div>
+
+        <div class="setup-group setup-checkbox-row">
+          <input type="checkbox" id="skipAnsweredCheck" checked />
+          <label for="skipAnsweredCheck">Skip questions I've already answered</label>
+        </div>
+
+        <div class="setup-group setup-checkbox-row">
+          <input type="checkbox" id="wrongOnlyCheck" />
+          <label for="wrongOnlyCheck">Only questions I answered incorrectly (in selected domain)</label>
+        </div>
+
+        <button id="startBtn" class="btn btn-primary btn-lg">Start Quiz</button>
+
+        <div class="setup-actions">
+          <button id="importBtn" class="btn btn-outline">Import Progress</button>
+          <input type="file" id="importFile" accept=".json" hidden>
+        </div>
+      </div>
+    </div>
+
+    <div id="quizScreen" class="screen quiz-screen" hidden>
+      <div class="quiz-toolbar">
+        <div class="toolbar-left">
+          <span id="domainBadge" class="domain-badge"></span>
+          <span id="questionCounter" class="question-counter"></span>
+        </div>
+        <div class="toolbar-right">
+          <button id="saveBtn" class="btn btn-sm btn-outline" title="Save progress to a JSON file">Save</button>
+          <button id="saveExitBtn" class="btn btn-sm btn-outline" title="Save progress to a JSON file and return to setup">Save and Exit</button>
+          <button id="exitBtn" class="btn btn-sm btn-outline" title="Return to setup (progress stays saved in this browser)">Exit</button>
+          <button id="sessionReportBtn" class="btn btn-sm btn-outline" title="Download AI session summary (this quiz run only)" disabled>Session report</button>
+          <button id="resetBtn" class="btn btn-sm btn-outline btn-danger" title="Reset all progress">Reset</button>
+        </div>
+      </div>
+
+      <div class="progress-bar-container">
+        <div id="progressBar" class="progress-bar"></div>
+      </div>
+
+      <div class="quiz-content-row">
+        <div id="questionCard" class="question-card">
+          <p id="questionText" class="question-text"></p>
+
+          <div id="optionsContainer" class="options-container"></div>
+
+          <div id="feedbackContainer" class="feedback-container" hidden>
+            <div id="feedbackBanner" class="feedback-banner"></div>
+            <div id="justificationsPanel" class="justifications-panel">
+              <h3>Justifications</h3>
+              <div id="justificationsList"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="aiChatSection" class="ai-chat-section" hidden>
+          <button id="aiChatToggle" class="btn btn-ai-chat">Ask AI to Explain</button>
+          <div id="aiChatPanel" class="ai-chat-panel" hidden>
+            <div id="aiChatMessages" class="ai-chat-messages"></div>
+            <div class="ai-chat-input-row">
+              <input id="aiChatInput" type="text" placeholder="Ask a follow-up question..." />
+              <button id="aiChatSend" class="btn btn-primary btn-sm">Send</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="quiz-nav">
+        <button id="prevBtn" class="btn btn-outline">Previous</button>
+        <button type="button" id="clearAnswerBtn" class="btn btn-outline btn-sm" title="Remove your answer and choose again" disabled>Clear answer</button>
+        <button id="nextBtn" class="btn btn-primary">Next</button>
+      </div>
+    </div>
+
+    <div id="summaryScreen" class="screen summary-screen" hidden>
+      <div class="summary-card">
+        <h2>Quiz Complete</h2>
+        <div id="summaryScore" class="summary-score"></div>
+        <div id="summaryBreakdown" class="summary-breakdown"></div>
+        <div class="summary-actions">
+          <button id="retryAllBtn" class="btn btn-primary">Retry All</button>
+          <button id="retryMissedBtn" class="btn btn-outline">Retry Missed Only</button>
+          <button id="sessionReportSummaryBtn" class="btn btn-outline" title="Download AI session summary (this quiz run only)" disabled>Session report (.md)</button>
+          <button id="backToSetupBtn" class="btn btn-outline">Back to Setup</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="sessionReportWaitOverlay" class="session-report-wait-overlay" hidden>
+      <div class="session-report-wait-card" role="status" aria-live="polite">
+        <div class="session-report-wait-spinner" aria-hidden="true"></div>
+        <p class="session-report-wait-text">Generating your session report…</p>
+        <p class="session-report-wait-sub">This usually takes 15–60 seconds.</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
