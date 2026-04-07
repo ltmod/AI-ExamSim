@@ -136,4 +136,4 @@ AI-ExamSim/
 
 ## License
 
-ISC
+MIT
